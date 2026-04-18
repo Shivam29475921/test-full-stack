@@ -18,7 +18,7 @@ sudo systemctl start mongod
 sudo systemctl enable mongod
 
 sudo apt install git -y
-git clone https://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@github.com/Shivam29475921/test-full-stack.git
+git clone https://<token>@github.com/Shivam29475921/test-full-stack.git
 
 ## 8. Build Spring Boot App
 cd spring-backend

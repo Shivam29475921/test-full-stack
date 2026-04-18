@@ -1,4 +1,8 @@
-const API_BASE_URL = window.API_BASE_URL || "http://localhost:8080";
+const API_BASE_URL = (
+    window.API_BASE_URL ||
+    new URLSearchParams(window.location.search).get("api") ||
+    "http://localhost:8080"
+).replace(/\/+$/, "");
 
 const state = {
     route: getRouteFromHash(),
@@ -117,13 +121,29 @@ function renderMessage() {
 }
 
 async function apiRequest(path, options = {}) {
-    const response = await fetch(`${API_BASE_URL}${path}`, {
-        headers: {
-            "Content-Type": "application/json",
-            ...(options.headers || {}),
-        },
-        ...options,
-    });
+    const method = String(options.method || "GET").toUpperCase();
+    const hasBody = options.body !== undefined && options.body !== null;
+    const requestHeaders = {
+        ...(options.headers || {}),
+    };
+
+    // Only set JSON content type when a request actually sends a body.
+    if (hasBody && !requestHeaders["Content-Type"] && !requestHeaders["content-type"]) {
+        requestHeaders["Content-Type"] = "application/json";
+    }
+
+    let response;
+    try {
+        response = await fetch(`${API_BASE_URL}${path}`, {
+            ...options,
+            method,
+            headers: requestHeaders,
+        });
+    } catch {
+        throw new Error(
+            `Cannot reach API at ${API_BASE_URL}. Make sure backend is running and CORS allows this frontend origin.`
+        );
+    }
 
     const rawText = await response.text();
     let payload = null;
@@ -165,32 +185,45 @@ async function refreshAllData() {
     state.loading = true;
     render();
 
-    try {
-        const [books, students, borrows] = await Promise.all([
-            fetchCollection("/book"),
-            fetchCollection("/student"),
-            fetchCollection("/borrow"),
-        ]);
+    const collections = [
+        { key: "books", path: "/book", label: "books" },
+        { key: "students", path: "/student", label: "students" },
+        { key: "borrows", path: "/borrow", label: "borrow records" },
+    ];
 
-        state.books = books;
-        state.students = students;
-        state.borrows = borrows;
+    const results = await Promise.allSettled(
+        collections.map((collection) => fetchCollection(collection.path))
+    );
 
-        if (
-            state.editStudent &&
-            !state.students.some((student) => String(student?.id) === String(state.editStudent?.id))
-        ) {
-            state.editStudent = null;
+    const failedCollections = [];
+
+    results.forEach((result, index) => {
+        const { key, label } = collections[index];
+        if (result.status === "fulfilled") {
+            state[key] = result.value;
+            return;
         }
-    } catch (error) {
-        showMessage(`Unable to load data: ${error.message}`, "error");
-        state.books = [];
-        state.students = [];
-        state.borrows = [];
-    } finally {
-        state.loading = false;
-        render();
+
+        state[key] = [];
+        failedCollections.push(label);
+    });
+
+    if (failedCollections.length) {
+        showMessage(
+            `Unable to load ${failedCollections.join(", ")}. Other data loaded successfully.`,
+            "error"
+        );
     }
+
+    if (
+        state.editStudent &&
+        !state.students.some((student) => String(student?.id) === String(state.editStudent?.id))
+    ) {
+        state.editStudent = null;
+    }
+
+    state.loading = false;
+    render();
 }
 
 function setRoute(route) {
