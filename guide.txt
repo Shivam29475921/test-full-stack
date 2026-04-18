@@ -1,0 +1,68 @@
+- Open ports:
+  - 22 (SSH)
+  - 80 (HTTP)
+  - 8080 (Backend)
+  - 5173 (Frontend)
+
+sudo apt update && sudo apt upgrade -y
+
+sudo apt install openjdk-17-jdk -y
+java -version
+
+wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add -
+echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org-6.0.list
+sudo apt update
+sudo apt install mongodb-org -y
+
+sudo systemctl start mongod
+sudo systemctl enable mongod
+
+sudo apt install git -y
+git clone https://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@github.com/Shivam29475921/test-full-stack.git
+
+## 8. Build Spring Boot App
+cd spring-backend
+chmod +x mvnw
+./mvnw clean package
+
+## 10. Run Backend (Daemon)
+nohup java -jar target/*.jar > app.log 2>&1 &
+
+
+mongosh
+use library
+
+db.book.insertMany([
+  { title: "Book1", author: "Author1", price: 500, stock: 10 },
+  { title: "Book2", author: "Author2", price: 300, stock: 5 }
+])
+
+## 12. Verify Backend Running
+ps aux | grep java
+sudo lsof -i :8080
+
+Expected:
+*:8080 (LISTEN)
+
+## 13. Test APIs Locally
+curl http://localhost:8080/book
+curl http://localhost:8080/student
+curl http://localhost:8080/borrow
+
+## 14. Access from Browser
+http://<EC2-IP>:8080/book
+
+## 17. Restart Backend (if needed)
+pkill -f java
+nohup java -jar target/*.jar > app.log 2>&1 &
+
+
+- Always use HTTP (not HTTPS):
+  http://<EC2-IP>:8080
+
+- Ensure MongoDB collection names match your Spring Boot model:
+
+
+http://<EC2-IP>:8080/book
+http://<EC2-IP>:8080/student
+http://<EC2-IP>:8080/borrow
