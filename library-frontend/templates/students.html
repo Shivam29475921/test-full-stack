@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="header-flex">
+    <h2>Student Registry</h2>
+
+    <div class="search-container">
+        <form action="{{ url_for('students') }}" method="GET" class="search-form">
+            <input type="text" name="q" class="search-input" placeholder="Search Name or Roll..." value="{{ request.args.get('q', '') }}">
+            <button type="submit" class="search-btn">Search</button>
+            {% if request.args.get('q') %}
+                <a href="{{ url_for('students') }}" class="btn" style="padding: 10px; background: transparent; color: #aaa;">✕</a>
+            {% endif %}
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <h3>Register Student</h3>
+    <form action="{{ url_for('add_student') }}" method="POST" class="form-row">
+        <input type="text" name="name" placeholder="Full Name" required>
+        <input type="text" name="roll" placeholder="Roll Number" required>
+        <button type="submit" class="btn btn-primary">Register</button>
+    </form>
+</div>
+
+<div class="card">
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Roll No</th>
+                <th>Borrowed Books</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in students %}
+            <tr>
+                <td>{{ student.name }}</td>
+                <td>{{ student.roll }}</td>
+                <td>
+                    {% for book in student.borrowedBooks %}
+                        <span class="badge">{{ book.title }}</span>
+                    {% else %}
+                        <span style="color: #555;">None</span>
+                    {% endfor %}
+                </td>
+                <td style="display: flex; gap: 5px;">
+                    <a href="{{ url_for('edit_student', id=student.id) }}" class="btn btn-primary" style="padding: 5px 10px; font-size: 0.8rem;">Edit</a>
+                    <form action="{{ url_for('delete_student', id=student.id) }}" method="POST" onsubmit="return confirm('Delete student?');">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="4">No students registered.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

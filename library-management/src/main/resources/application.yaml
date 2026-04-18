@@ -1,0 +1,10 @@
+spring:
+  cloud:
+    config:
+      enabled: false
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: library
+      auto-index-creation: true

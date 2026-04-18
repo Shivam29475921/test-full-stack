@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="header-flex">
+    <h2>Book Inventory</h2>
+
+    <div class="search-container">
+        <form action="{{ url_for('books') }}" method="GET" class="search-form">
+            <input type="text" name="q" class="search-input" placeholder="Search Title or Author..." value="{{ request.args.get('q', '') }}">
+            <button type="submit" class="search-btn">Search</button>
+            {% if request.args.get('q') %}
+                <a href="{{ url_for('books') }}" class="btn" style="padding: 10px; background: transparent; color: #aaa;">✕</a>
+            {% endif %}
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <h3>Add New Book</h3>
+    <form action="{{ url_for('add_book') }}" method="POST" class="form-row">
+        <input type="text" name="title" placeholder="Title" required>
+        <input type="text" name="author" placeholder="Author" required>
+        <input type="number" step="0.01" name="price" placeholder="Price" required>
+        <input type="number" name="stock" placeholder="Stock" required>
+        <button type="submit" class="btn btn-primary">Add Book</button>
+    </form>
+</div>
+
+<div class="card">
+    <table>
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for book in books %}
+            <tr>
+                <td>{{ book.title }}</td>
+                <td>{{ book.author }}</td>
+                <td>${{ book.price }}</td>
+                <td>
+                    {% if book.stock > 0 %}
+                        <span style="color: var(--success)">{{ book.stock }}</span>
+                    {% else %}
+                        <span style="color: var(--danger)">Out of Stock</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <form action="{{ url_for('delete_book', id=book.id) }}" method="POST" onsubmit="return confirm('Are you sure?');">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="5">No books found in the library.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

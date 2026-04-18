@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="hero">
+
+    <div class="atom-container">
+        <div class="nucleus"></div>
+
+        <div class="electron-orbit">
+            <div class="electron"></div>
+        </div>
+    </div>
+    <h1>Library<br>Atomic.</h1>
+
+    <p>
+        The fundamental building block of knowledge management. <br>
+        Simple, powerful, and energetic.
+    </p>
+
+
+
+  <br>
+  <br>
+
+    <div style="animation: fadeUp 1.4s ease-out;">
+        <a href="{{ url_for('books') }}" class="btn btn-primary" style="padding: 18px 40px; border-radius: 50px; font-size: 1.1rem;">
+            Launch App
+        </a>
+    </div>
+</div>
+
+<div style="display: flex; gap: 30px; margin-top: 20px; justify-content: center; flex-wrap: wrap;">
+    <div class="card" style="flex: 1; min-width: 280px; text-align: center; border-color: rgba(127, 90, 240, 0.2);">
+        <h2 style="color: var(--primary); margin-bottom: 5px;">API</h2>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Spring Boot Backend</p>
+    </div>
+
+    <div class="card" style="flex: 1; min-width: 280px; text-align: center; border-color: rgba(44, 182, 125, 0.2);">
+        <h2 style="color: var(--secondary); margin-bottom: 5px;">DB</h2>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">MongoDB Atlas</p>
+    </div>
+</div>
+{% endblock %}

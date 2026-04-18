@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Edit Student</h2>
+<div class="card" style="max-width: 600px;">
+    {% if student %}
+    <form action="{{ url_for('edit_student', id=student.id) }}" method="POST">
+        <div style="margin-bottom: 15px;">
+            <label>Name</label>
+            <input type="text" name="name" value="{{ student.name }}" style="width: 100%;">
+        </div>
+        <div style="margin-bottom: 15px;">
+            <label>Roll (Cannot be changed)</label>
+            <input type="text" value="{{ student.roll }}" disabled style="width: 100%; opacity: 0.5;">
+        </div>
+        <button type="submit" class="btn btn-primary">Update Student</button>
+        <a href="{{ url_for('students') }}" class="btn" style="background: #444; color: white;">Cancel</a>
+    </form>
+    {% else %}
+    <p>Student not found.</p>
+    {% endif %}
+</div>
+{% endblock %}

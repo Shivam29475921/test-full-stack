@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="header-flex">
+    <h2>Circulation Desk</h2>
+
+    <div class="search-container">
+        <form action="{{ url_for('borrow') }}" method="GET" class="search-form">
+            <input type="text" name="q" class="search-input" placeholder="Find by Student or Book..." value="{{ request.args.get('q', '') }}">
+            <button type="submit" class="search-btn">Search</button>
+             {% if request.args.get('q') %}
+                <a href="{{ url_for('borrow') }}" class="btn" style="padding: 10px; background: transparent; color: #aaa;">✕</a>
+            {% endif %}
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <h3>Issue Book</h3>
+    <form action="{{ url_for('add_borrow') }}" method="POST" class="form-row">
+
+        <select name="student_id" required>
+            <option value="" disabled selected>Select Student</option>
+            {% for student in students %}
+                <option value="{{ student.id }}">{{ student.name }} ({{ student.roll }})</option>
+            {% endfor %}
+        </select>
+
+        <select name="book_id" required>
+            <option value="" disabled selected>Select Book</option>
+            {% for book in books %}
+                <option value="{{ book.id }}">{{ book.title }} (Qty: {{ book.stock }})</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit" class="btn btn-primary">Issue Book</button>
+    </form>
+</div>
+
+<div class="card">
+    <h3>Transaction History</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Student</th>
+                <th>Book</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for borrow in borrows %}
+            <tr>
+                <td>{{ borrow.dateTime }}</td>
+                <td>
+                    {% if borrow.student %}
+                        {{ borrow.student.name }}
+                    {% else %}
+                        <em style="color:#666">Deleted Student</em>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if borrow.book %}
+                        {{ borrow.book.title }}
+                    {% else %}
+                        <em style="color:#666">Deleted Book</em>
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="3">No records found.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
