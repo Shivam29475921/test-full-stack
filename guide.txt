@@ -10,7 +10,9 @@ sudo apt install openjdk-17-jdk -y
 java -version
 
 wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add -
-echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org-6.0.list
+
+echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+
 sudo apt update
 sudo apt install mongodb-org -y
 
